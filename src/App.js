@@ -1,4 +1,3 @@
-import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Alert, View, Button, FlatList, Text, Modal } from 'react-native';
 import * as FileSystem from 'expo-file-system';
 import { useEffect, useState } from 'react';
@@ -104,7 +103,5 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		marginVertical: 5,
-
 	}
-
 });
