@@ -2,9 +2,9 @@ import { StyleSheet, Alert, View, Button, FlatList, Text, Modal } from 'react-na
 import * as FileSystem from 'expo-file-system';
 import { useEffect, useState } from 'react';
 import { Entypo } from '@expo/vector-icons';
-import CreateFolderModal from './createFolderModal';
+import CreateFolderModal from '../createFolderModal';
 
-export default function App() {
+const Folders = () => {
 
 	const [folders, setFolders] = useState([]);
 	const [isModalVisible, setIsModalVisible] = useState(false);
@@ -105,3 +105,5 @@ const styles = StyleSheet.create({
 		marginVertical: 5,
 	}
 });
+
+export default Folders;
