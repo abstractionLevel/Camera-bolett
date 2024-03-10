@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Button, FlatList, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, View, Button, FlatList, TouchableOpacity, Image, Text } from 'react-native';
 import * as FileSystem from 'expo-file-system';
 import CameraComponent from '../components/cameraComponent';
 import { AntDesign } from '@expo/vector-icons';
@@ -12,8 +12,16 @@ const Folder = ({ navigation, route }) => {
 
     const [openCamera, setOpenCamera] = useState(false);
     const [images, setImages] = useState(null);
-    const [openImageModal,setOpenImageModal] = useState(null);
-    const [imageClicked,setImageClicked] = useState(null);
+    const [openImageModal, setOpenImageModal] = useState(null);
+    const [imageClicked, setImageClicked] = useState(null);
+
+    const hideHeader = () => {
+        navigation.setParams({ showHeader: false }); // Imposta i parametri della route per nascondere l'header
+    };
+
+    const showHeader = () => {
+        navigation.setParams({ showHeader: true }); // Imposta i parametri della route per mostrare l'header
+    };
 
     const fetchContentInFolder = async () => {
         try {
@@ -23,7 +31,6 @@ const Folder = ({ navigation, route }) => {
             );
             contentFolder.push("add");
             setImages(contentFolder);
-            console.log("content of folder   ", contentFolder)
 
         } catch (error) {
             console.error('Errore durante il recupero delle cartelle:', error);
@@ -34,20 +41,32 @@ const Folder = ({ navigation, route }) => {
         if (item === "add") {
             return (
                 <TouchableOpacity onPress={() => setOpenCamera(true)}>
-                    <AntDesign style={{ marginLeft: 22, marginTop: 24 }} name="pluscircleo" size={40} color="black" />
+                    <AntDesign style={{ marginLeft: 40, marginTop: 24 }} name="pluscircleo" size={40} color="black" />
                 </TouchableOpacity>
             )
         }
         return (
-            <TouchableOpacity onPress={() => {setOpenImageModal(true); setImageClicked(`${FileSystem.documentDirectory}documentP/${folder}/` + item)}}>
-                <Image source={{ uri: `${FileSystem.documentDirectory}documentP/${folder}/` + item }} style={{ marginLeft: 10, width: 60, height: 60, borderRadius: 10 ,marginTop:4}} />
-            </TouchableOpacity>
+            <View   >
+                <TouchableOpacity style={{ marginLeft: 30 }} onPress={() => { setOpenImageModal(true); setImageClicked(`${FileSystem.documentDirectory}documentP/${folder}/` + item) }}>
+                    <Image source={{ uri: `${FileSystem.documentDirectory}documentP/${folder}/` + item }} style={{ width: 80, height: 80, borderRadius: 10, marginTop: 20 }} />
+                    <Text>{item}</Text>
+                </TouchableOpacity>
+            </View>
         )
     }
 
+
     useEffect(() => {
         fetchContentInFolder()
+        navigation.setParams({ title: folder }); // Imposta il titolo dei parametri della route per il nuovo titolo
+
     }, []);
+
+    useEffect(() => {
+        openCamera ? hideHeader() : showHeader();
+
+        fetchContentInFolder()
+    }, [openCamera]);
 
     return (
         <View style={styles.container}>
@@ -57,18 +76,17 @@ const Folder = ({ navigation, route }) => {
                 </View>
             ) : (
                 <View>
-                    <View style={{ width: '100%', marginTop: 10,alignItems:'center' }}>
+                    <View style={{ width: '100%', marginTop: 40 }}>
                         <FlatList
                             data={images}
                             renderItem={renderPictures}
-                            contentContainerStyle={{flexDirection : "row", flexWrap : "wrap",alignItems:'center'}} 
                             keyExtractor={(item, index) => index.toString()}
-                            
+                            numColumns={3}
                         />
                     </View>
                 </View>
             )}
-            <FullScreenImageModal isVisible={openImageModal} pathImage={imageClicked} onClose={()=>setOpenImageModal(false)}/>
+            <FullScreenImageModal isVisible={openImageModal} pathImage={imageClicked} onClose={() => setOpenImageModal(false)} />
         </View>
     )
 }

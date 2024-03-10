@@ -4,9 +4,8 @@ import { AntDesign } from '@expo/vector-icons';
 
 
 const FullScreenImageModal = ({ isVisible, pathImage,onClose }) => {
-console.log(pathImage)
-    return (
 
+    return (
         <Modal visible={isVisible} transparent={true}>
             <View style={styles.modalContainer}>
                 <TouchableOpacity style={styles.closeButton} onPress={onClose}>

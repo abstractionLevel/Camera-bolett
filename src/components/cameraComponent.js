@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Button, Image, StyleSheet } from 'react-native';
+import { View, Button, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Camera } from 'expo-camera';
 import * as FileSystem from 'expo-file-system';
 import SetFileNameModal from '../modal/setNameFileModal';
-import * as ImageManipulator from 'expo-image-manipulator';
+import { AntDesign } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 
 const CameraComponent = ({ folder, onClose }) => {
 
@@ -40,33 +41,47 @@ const CameraComponent = ({ folder, onClose }) => {
         }
     };
 
+    const closeModalCamera = () => {
+        setIsModalVisible(false);
+        onClose();
+    }
+
     return (
         <View style={styles.container}>
             {capturedImage && (
                 <View style={styles.imagePreview}>
                     <Image source={{ uri: capturedImage }} style={styles.previewImage} />
                     <View style={styles.buttonContainer}>
-                        <Button title="Salva Immagine" onPress={()=>setIsModalVisible(true)} />
-                        <Button title="Annulla" onPress={onClose} />
+                        <View style={styles.buttonWrapper}>
+                            <Button title="Salva Immagine" onPress={() => setIsModalVisible(true)} style={styles.button} />
+                        </View>
+                        <View style={styles.buttonWrapper}>
+                            <Button title="Annulla" onPress={onClose} style={styles.button} />
+                        </View>
                     </View>
                 </View>
             )}
             {!capturedImage && (
                 <View style={styles.cameraView} >
+                    <View style={{ height: '10%', justifyContent: 'center', alignItems: 'flex-end' }}>
+                        <TouchableOpacity onPress={onClose} style={{ marginTop: 30, marginRight: 20 }}>
+                            <AntDesign name="close" size={24} color="black" />
+                        </TouchableOpacity>
+                    </View>
                     <Camera
                         style={styles.camera}
                         type={Camera.Constants.Type.back}
                         ref={ref => setCameraRef(ref)}
                     />
-                    <View style={styles.buttonContainer}>
-                        <Button title="Scatta Foto" onPress={takePicture} />
-                        <Button title="Chiudi Fotocamera" onPress={onClose} />
+                    <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                        {/* <Button title="Scatta Foto" onPress={takePicture} /> */}
+                        <Feather name="circle" size={64} color="black" onPress={takePicture} />
                     </View>
                 </View>
             )}
             <SetFileNameModal
                 visible={isModalVisible}
-                onClose={() => setIsModalVisible(false)}
+                onClose={closeModalCamera}
                 onSetFileName={saveImageHandler}
             />
         </View>
@@ -82,18 +97,26 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     camera: {
-        flex: 1,
+        height: '80%'
     },
     buttonContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        marginTop: 10,
+        flexDirection: 'row', // Disposizione orizzontale dei bottoni
+        justifyContent: 'space-between', // Spazio uniforme tra i bottoni
+        paddingHorizontal: 20, // Aggiunge spazio ai lati per evitare che i bottoni siano troppo vicini ai bordi
+    },
+    buttonWrapper: {
+        flex: 1, // Fa sì che entrambi i bottoni occupino lo stesso spazio
+        marginHorizontal: 5
+    },
+    button: {
+        width: '100%', // Larghezza fissa per entrambi i bottoni
     },
     imagePreview: {
+        marginTop: 40,
         flex: 1,
     },
     previewImage: {
-        flex: 1,
+        height:'90%',
         marginBottom: 10,
     },
 });

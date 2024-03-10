@@ -1,4 +1,4 @@
-import { StyleSheet, View, Button, FlatList, Text,TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Button, FlatList, Text, TouchableOpacity } from 'react-native';
 import * as FileSystem from 'expo-file-system';
 import { useEffect, useState } from 'react';
 import { Entypo } from '@expo/vector-icons';
@@ -56,7 +56,7 @@ const Folders = ({ navigation }) => {
     };
 
     const renderFolder = ({ item }) => (
-        <TouchableOpacity  onPress={()=>navigation.navigate("Folder",{folder:item})}>
+        <TouchableOpacity onPress={() => navigation.navigate("Folder", { folder: item })}>
             <View style={styles.folders}>
                 <Entypo style={{ marginLeft: 10 }} name="folder" size={24} color="#1E90FF" />
                 <Text style={{ marginLeft: 10 }} >{item}</Text>
@@ -74,7 +74,7 @@ const Folders = ({ navigation }) => {
     }, [updateView]);
 
     return (
-        <View style={{ flex: 1, marginTop: 100 }}>
+        <View style={{ flex: 1, marginTop: 10 }}>
             {folders.length > 0 ? (
                 <View >
                     <FlatList
