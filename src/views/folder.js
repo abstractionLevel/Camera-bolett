@@ -3,6 +3,7 @@ import { StyleSheet, View, Button, FlatList, TouchableOpacity, Image } from 'rea
 import * as FileSystem from 'expo-file-system';
 import CameraComponent from '../components/cameraComponent';
 import { AntDesign } from '@expo/vector-icons';
+import FullScreenImageModal from '../modal/fullScreenImageModal';
 
 
 const Folder = ({ navigation, route }) => {
@@ -11,6 +12,8 @@ const Folder = ({ navigation, route }) => {
 
     const [openCamera, setOpenCamera] = useState(false);
     const [images, setImages] = useState(null);
+    const [openImageModal,setOpenImageModal] = useState(null);
+    const [imageClicked,setImageClicked] = useState(null);
 
     const fetchContentInFolder = async () => {
         try {
@@ -33,12 +36,13 @@ const Folder = ({ navigation, route }) => {
                 <TouchableOpacity onPress={() => setOpenCamera(true)}>
                     <AntDesign style={{ marginLeft: 22, marginTop: 24 }} name="pluscircleo" size={40} color="black" />
                 </TouchableOpacity>
-
             )
-
         }
-        return <Image source={{ uri: `${FileSystem.documentDirectory}documentP/${folder}/` + item }} style={{ marginLeft: 10, width: 80, height: 80, borderRadius: 10 }} />
-
+        return (
+            <TouchableOpacity onPress={() => {setOpenImageModal(true); setImageClicked(`${FileSystem.documentDirectory}documentP/${folder}/` + item)}}>
+                <Image source={{ uri: `${FileSystem.documentDirectory}documentP/${folder}/` + item }} style={{ marginLeft: 10, width: 60, height: 60, borderRadius: 10 ,marginTop:4}} />
+            </TouchableOpacity>
+        )
     }
 
     useEffect(() => {
@@ -53,16 +57,18 @@ const Folder = ({ navigation, route }) => {
                 </View>
             ) : (
                 <View>
-                    <View style={{ width: '100%', marginTop: 10 }}>
+                    <View style={{ width: '100%', marginTop: 10,alignItems:'center' }}>
                         <FlatList
                             data={images}
                             renderItem={renderPictures}
-                            horizontal={true}
+                            contentContainerStyle={{flexDirection : "row", flexWrap : "wrap",alignItems:'center'}} 
                             keyExtractor={(item, index) => index.toString()}
+                            
                         />
                     </View>
                 </View>
             )}
+            <FullScreenImageModal isVisible={openImageModal} pathImage={imageClicked} onClose={()=>setOpenImageModal(false)}/>
         </View>
     )
 }
