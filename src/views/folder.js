@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Button, FlatList, Text } from 'react-native';
+import { StyleSheet, View, Button, FlatList, TouchableOpacity, Image } from 'react-native';
 import * as FileSystem from 'expo-file-system';
 import CameraComponent from '../components/cameraComponent';
+import { AntDesign } from '@expo/vector-icons';
+
 
 const Folder = ({ navigation, route }) => {
 
@@ -16,6 +18,7 @@ const Folder = ({ navigation, route }) => {
             const contentFolder = await FileSystem.readDirectoryAsync(
                 documentDirectory
             );
+            contentFolder.push("add");
             setImages(contentFolder);
             console.log("content of folder   ", contentFolder)
 
@@ -23,6 +26,20 @@ const Folder = ({ navigation, route }) => {
             console.error('Errore durante il recupero delle cartelle:', error);
         }
     };
+
+    const renderPictures = ({ item }) => {
+        if (item === "add") {
+            return (
+                <TouchableOpacity onPress={() => setOpenCamera(true)}>
+                    <AntDesign style={{ marginLeft: 22, marginTop: 24 }} name="pluscircleo" size={40} color="black" />
+                </TouchableOpacity>
+
+            )
+
+        }
+        return <Image source={{ uri: `${FileSystem.documentDirectory}documentP/${folder}/` + item }} style={{ marginLeft: 10, width: 80, height: 80, borderRadius: 10 }} />
+
+    }
 
     useEffect(() => {
         fetchContentInFolder()
@@ -36,16 +53,13 @@ const Folder = ({ navigation, route }) => {
                 </View>
             ) : (
                 <View>
-                    <View style={{ width: '100%', alignItems: 'center', marginTop: 100 }}>
+                    <View style={{ width: '100%', marginTop: 10 }}>
                         <FlatList
                             data={images}
-                            renderItem={(item)=><Text>{item.item}</Text>}
+                            renderItem={renderPictures}
                             horizontal={true}
                             keyExtractor={(item, index) => index.toString()}
                         />
-                        <View style={{ width: '50%' }}>
-                            <Button style={{ with: 20 }} title="Apri Camera" onPress={() => setOpenCamera(true)} />
-                        </View>
                     </View>
                 </View>
             )}
@@ -56,10 +70,16 @@ const Folder = ({ navigation, route }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        flexDirection: 'column',
+
     },
     camera: {
         flex: 1,
+    },
+    button: {
+        backgroundColor: 'blue',
+        paddingVertical: 15,
+        paddingHorizontal: 30,
+        marginBottom: 20, // Spazio tra il bottone e il contenuto sopra
     },
 });
 

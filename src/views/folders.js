@@ -3,7 +3,6 @@ import * as FileSystem from 'expo-file-system';
 import { useEffect, useState } from 'react';
 import { Entypo } from '@expo/vector-icons';
 import CreateFolderModal from '../createFolderModal';
-import { useNavigation } from '@react-navigation/native';
 
 const Folders = ({ navigation }) => {
 
