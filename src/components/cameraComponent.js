@@ -3,6 +3,7 @@ import { View, Button, Image, StyleSheet } from 'react-native';
 import { Camera } from 'expo-camera';
 import * as FileSystem from 'expo-file-system';
 import SetFileNameModal from '../modal/setNameFileModal';
+import * as ImageManipulator from 'expo-image-manipulator';
 
 const CameraComponent = ({ folder, onClose }) => {
 
@@ -18,6 +19,7 @@ const CameraComponent = ({ folder, onClose }) => {
         if (status === 'granted') {
             if (cameraRef) {
                 let photo = await cameraRef.takePictureAsync();
+
                 setCapturedImage(photo.uri);
             }
         } else {
@@ -25,19 +27,17 @@ const CameraComponent = ({ folder, onClose }) => {
         }
     };
 
-    const saveImageHandler = async () => {
-        console.log(capturedImage)
-        // if (capturedImage) {
-        //     try {
-        //         const { uri } = await FileSystem.moveAsync({
-        //             from: capturedImage,
-        //             to: `${FileSystem.documentDirectory}/` + folder + '/' + capturedImage,
-        //         });
-        //         console.log('Immagine salvata:', uri);
-        //     } catch (error) {
-        //         console.error('Errore durante il salvataggio dell\'immagine:', error);
-        //     }
-        // }
+    const saveImageHandler = async (fileName) => {
+        if (capturedImage) {
+            try {
+                await FileSystem.moveAsync({
+                    from: capturedImage,
+                    to: `${FileSystem.documentDirectory}documentP/${folder}/${fileName}.jpg`
+                });
+            } catch (error) {
+                console.error('Errore durante il salvataggio dell\'immagine:', error);
+            }
+        }
     };
 
     return (
@@ -67,7 +67,7 @@ const CameraComponent = ({ folder, onClose }) => {
             <SetFileNameModal
                 visible={isModalVisible}
                 onClose={() => setIsModalVisible(false)}
-                onCreateFolder={saveImageHandler}
+                onSetFileName={saveImageHandler}
             />
         </View>
     );
