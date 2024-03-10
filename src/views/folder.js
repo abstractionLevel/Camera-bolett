@@ -28,11 +28,16 @@ const Folder = ({ navigation, route }) => {
     return (
         <View style={styles.container}>
             {openCamera ? (
-                <View style={{flex:1}}>
-                    <CameraComponent />
+                <View style={{ flex: 1 }}>
+                    <CameraComponent folder={folder} onClose={()=>setOpenCamera(false)}/>
                 </View>
             ) : (
                 <View>
+                    <View style={{ width: '100%', alignItems: 'center', marginTop: 100 }}>
+                        <View style={{ width: '50%' }}>
+                            <Button style={{ with: 20 }} title="Apri Camera" onPress={() => setOpenCamera(true)} />
+                        </View>
+                    </View>
                 </View>
             )}
         </View>

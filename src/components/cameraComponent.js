@@ -1,32 +1,74 @@
 import React, { useState, useEffect } from 'react';
-import { View, Button, Text, StyleSheet } from 'react-native';
+import { View, Button, Image, StyleSheet } from 'react-native';
 import { Camera } from 'expo-camera';
+import * as FileSystem from 'expo-file-system';
+import SetFileNameModal from '../modal/setNameFileModal';
 
-const CameraComponent = () => {
+const CameraComponent = ({ folder, onClose }) => {
+
     const [hasPermission, setHasPermission] = useState(null);
     const [cameraRef, setCameraRef] = useState(null);
+    const [capturedImage, setCapturedImage] = useState(null);
+    const [fileName, setFileName] = useState(null);
+    const [isModalVisible, setIsModalVisible] = useState(false);
+
 
     const takePicture = async () => {
-        const { status } = await Camera.requestPermissionsAsync();
+        const { status } = await Camera.requestCameraPermissionsAsync();
         if (status === 'granted') {
             if (cameraRef) {
                 let photo = await cameraRef.takePictureAsync();
-                console.log('Foto catturata:', photo);
-                // Qui puoi gestire la foto catturata, ad esempio mostrare l'immagine in un'anteprima
+                setCapturedImage(photo.uri);
             }
         } else {
             console.log('Accesso alla fotocamera non consentito');
         }
     };
 
+    const saveImageHandler = async () => {
+        console.log(capturedImage)
+        // if (capturedImage) {
+        //     try {
+        //         const { uri } = await FileSystem.moveAsync({
+        //             from: capturedImage,
+        //             to: `${FileSystem.documentDirectory}/` + folder + '/' + capturedImage,
+        //         });
+        //         console.log('Immagine salvata:', uri);
+        //     } catch (error) {
+        //         console.error('Errore durante il salvataggio dell\'immagine:', error);
+        //     }
+        // }
+    };
+
     return (
         <View style={styles.container}>
-            <Camera
-                style={styles.camera}
-                type={Camera.Constants.Type.back}
-                ref={ref => setCameraRef(ref)}
+            {capturedImage && (
+                <View style={styles.imagePreview}>
+                    <Image source={{ uri: capturedImage }} style={styles.previewImage} />
+                    <View style={styles.buttonContainer}>
+                        <Button title="Salva Immagine" onPress={()=>setIsModalVisible(true)} />
+                        <Button title="Annulla" onPress={onClose} />
+                    </View>
+                </View>
+            )}
+            {!capturedImage && (
+                <View style={styles.cameraView} >
+                    <Camera
+                        style={styles.camera}
+                        type={Camera.Constants.Type.back}
+                        ref={ref => setCameraRef(ref)}
+                    />
+                    <View style={styles.buttonContainer}>
+                        <Button title="Scatta Foto" onPress={takePicture} />
+                        <Button title="Chiudi Fotocamera" onPress={onClose} />
+                    </View>
+                </View>
+            )}
+            <SetFileNameModal
+                visible={isModalVisible}
+                onClose={() => setIsModalVisible(false)}
+                onCreateFolder={saveImageHandler}
             />
-            <Button title="Scatta Foto" onPress={takePicture} />
         </View>
     );
 };
@@ -36,8 +78,23 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'column',
     },
+    cameraView: {
+        flex: 1,
+    },
     camera: {
         flex: 1,
+    },
+    buttonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        marginTop: 10,
+    },
+    imagePreview: {
+        flex: 1,
+    },
+    previewImage: {
+        flex: 1,
+        marginBottom: 10,
     },
 });
 
