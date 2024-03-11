@@ -6,6 +6,7 @@ import CreateFolderModal from '../createFolderModal';
 import { AntDesign, FontAwesome6 } from '@expo/vector-icons';
 import RenameFolderModal from '../modal/renameFolderModal';
 import { FOLDERS_DIRECTORY_PATH } from '../../constant/constants';
+import DeleteFolderModal from '../modal/deleteDirectoryModal';
 
 
 const Folders = ({ navigation }) => {
@@ -15,6 +16,7 @@ const Folders = ({ navigation }) => {
     const [updateView, setUpdateView] = useState(false);
     const [visibleHeadMenu, setVisibleHeadMenu] = useState(null);
     const [isModalRename,setIsModalRename] = useState(null);
+    const [isModalDelete,setIsModalDelete] = useState(null);
     const [currentFolder,setCurrentFolder] = useState(null);
 
     const handleCreateFolder = async (folderName) => {
@@ -45,9 +47,7 @@ const Folders = ({ navigation }) => {
     const fetchFolders = async () => {
         try {
             const documentPDirectory = FOLDERS_DIRECTORY_PATH;
-            const documentPFolders = await FileSystem.readDirectoryAsync(
-                documentPDirectory
-            );
+            const documentPFolders = await FileSystem.readDirectoryAsync(documentPDirectory);
             setFolders(documentPFolders);
         } catch (error) {
             console.error('Errore durante il recupero delle cartelle:', error);
@@ -81,7 +81,7 @@ const Folders = ({ navigation }) => {
     useEffect(() => {
         fetchFolders();
         if(!isModalRename) setVisibleHeadMenu(false);
-    }, [isModalRename]);
+    }, [isModalRename,isModalDelete]);
     
 
     return (
@@ -95,7 +95,7 @@ const Folders = ({ navigation }) => {
                     </View>
                     <View style={{ flexDirection: 'row' }}>
                         <Entypo name="edit" size={32} color="black" style={{ marginRight: 20 }} onPress={()=>setIsModalRename(true)} />
-                        <FontAwesome6 name="trash" size={32} color="black" style={{ marginRight: 20 }} />
+                        <FontAwesome6 name="trash" size={32} color="black" style={{ marginRight: 20 }} onPress={()=>setIsModalDelete(true)}/>
                     </View>
                 </View>
             }
@@ -125,6 +125,11 @@ const Folders = ({ navigation }) => {
             <RenameFolderModal
                 visible={isModalRename}
                 onClose={() => setIsModalRename(false)}
+                folder={currentFolder}
+            />
+            <DeleteFolderModal
+                visible={isModalDelete}
+                onClose={() => setIsModalDelete(false)}
                 folder={currentFolder}
             />
         </View>
