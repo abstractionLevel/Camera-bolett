@@ -32,6 +32,8 @@ const CameraComponent = ({ folder, onClose }) => {
         if (capturedImage) {
             const directoryTo = FOLDERS_DIRECTORY_PATH + folder + "/" + fileName;
             try {
+             
+
                 await FileSystem.moveAsync({
                     from: capturedImage,
                     to: directoryTo

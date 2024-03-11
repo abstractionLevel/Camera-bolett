@@ -1,2 +1,1 @@
-- cancellare e rinominare le foto
 - mettere la data del giorno dello scatto foto

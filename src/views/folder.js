@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Button, FlatList, TouchableOpacity, Image, Text } from 'react-native';
 import * as FileSystem from 'expo-file-system';
 import CameraComponent from '../components/cameraComponent';
-import { AntDesign,FontAwesome6 ,Entypo} from '@expo/vector-icons';
+import { AntDesign, FontAwesome6, Entypo } from '@expo/vector-icons';
 import FullScreenImageModal from '../modal/fullScreenImageModal';
 import RenameFileModal from '../modal/renameFileModal';
 import DeleteFileModal from '../modal/deleteFileModal';
+import { FOLDERS_DIRECTORY_PATH } from '../../constant/constants';
+import { getUniqueDatesFromArray } from '../utils/date';
 
 const Folder = ({ navigation, route }) => {
 
@@ -18,28 +20,72 @@ const Folder = ({ navigation, route }) => {
     const [visibleHeadMenu, setVisibleHeadMenu] = useState(null);
     const [isModalRename, setIsModalRename] = useState(null);
     const [isModalDelete, setIsModalDelete] = useState(null);
-    const [currentFile,setCurrentFile] = useState(null);
- 
+    const [currentFile, setCurrentFile] = useState(null);
+
     const hideHeader = () => {
-        navigation.setParams({ showHeader: false }); 
+        navigation.setParams({ showHeader: false });
     };
 
     const showHeader = () => {
         navigation.setParams({ showHeader: true });
     };
 
+    const mockFetch = () => {
+        const mock = [
+            { "date": "11/3/2024", "name": "Casa " },
+            { "date": "10/3/2024", "name": "Casa " },
+            { "date": "9/3/2024", "name": "Casa " },
+            { "date": "8/3/2024", "name": "Casa " },
+            { "date": "10/3/2024", "name": "Casa " },
+            { "date": "10/3/2024", "name": "Casa " },
+            { "date": "10/3/2024", "name": "Casa " },
+            { "date": "10/3/2024", "name": "Casa " },
+            { "date": "10/3/2024", "name": "Casa " },
+            { "date": "10/3/2024", "name": "Casa " },
+            { "date": "10/3/2024", "name": "Casa " },
+            { "date": "10/3/2024", "name": "Casa " }
+        ]
+
+      groupedFotoByDate(mock);
+    }
+
+    const groupedFotoByDate = (resp) => {
+        const uniqueDate = getUniqueDatesFromArray(resp);
+        let groupedPicture = [];
+        uniqueDate.forEach(date => {//per ogni data
+            const dateGroup = { date: date, image: [] };//setto la prima data
+            resp.forEach(item => {//itero l array d immagini
+                if (date === item.date) {
+                    dateGroup.image.push(item.name);//setto l immagine che combacia con la data
+                }
+            });
+            groupedPicture.push(dateGroup);//pusho l oggetto
+        });
+        setImages(groupedPicture);
+    }
+
     const fetchContentInFolder = async () => {
         try {
-            const documentDirectory = `${FileSystem.documentDirectory}/documentP/` + folder;
-            const contentFolder = await FileSystem.readDirectoryAsync(
-                documentDirectory
-            );
-            let cpyContent = [];
-            contentFolder.push("add");
-            contentFolder.forEach(item=>{
-                cpyContent.push(item.trim())
-            })
-            setImages(contentFolder);
+            const documentDirectory = FOLDERS_DIRECTORY_PATH + folder;
+            const contentFolder = await FileSystem.readDirectoryAsync(documentDirectory);
+            let contents = [];
+            for (const item of contentFolder) {
+                try {
+                    const fileInfo = await FileSystem.getInfoAsync(FOLDERS_DIRECTORY_PATH + folder + '/' + item);
+                    const date = new Date(fileInfo.modificationTime * 1000);
+                    const formattedDate = date.toLocaleDateString();
+                    if (item) {
+                        contents.push({
+                            name: item,
+                            date: formattedDate
+                        })
+                    }
+                } catch (error) {
+                    console.error('Errore durante il recupero delle informazioni del file:', error);
+                }
+            }
+            contents.push({name:"add"})
+            groupedFotoByDate(contents);
 
         } catch (error) {
             console.error('Errore durante il recupero delle cartelle:', error);
@@ -51,8 +97,7 @@ const Folder = ({ navigation, route }) => {
         setCurrentFile(item);
     }
 
-    const renderPictures = ({ item }) => {
-        
+    const renderImage = ({ item }) => {
         if (item === "add") {
             return (
                 <TouchableOpacity style={{ width: 100, height: 100, borderWidth: 1, borderRadius: 10, alignItems: 'center', justifyContent: 'center' }} onPress={() => setOpenCamera(true)}>
@@ -61,14 +106,27 @@ const Folder = ({ navigation, route }) => {
             )
         } else {
             return (
-                <TouchableOpacity style={{ padding: 2 }} onLongPress={() => onPressHeadMenu(item)} onPress={() => { setOpenImageModal(true); setImageClicked(`${FileSystem.documentDirectory}documentP/${folder}/` + item) }}>
-                    <Image source={{ uri: `${FileSystem.documentDirectory}documentP/${folder}/` + item }} style={{ width: 100, height: 100, borderRadius: 10, padding:0}} />
+                <TouchableOpacity style={{ padding: 2 }} onLongPress={() => onPressHeadMenu(item.name)} onPress={() => { setOpenImageModal(true); setImageClicked(FOLDERS_DIRECTORY_PATH + folder + "/" + item.name) }}>
+                    <Image source={{ uri: FOLDERS_DIRECTORY_PATH + folder + "/" + item }} style={{ width: 100, height: 100, borderRadius: 10, padding: 0 }} />
                     <Text numberOfLines={2} style={{ width: 80, height: 30, fontSize: 10, textAlign: 'center' }}>{item}</Text>
                 </TouchableOpacity>
             )
         }
-      
+
     }
+
+    const renderItem = ({ item }) => (
+        <View>
+            <Text style={styles.date}>{item.date}</Text>
+            <FlatList
+                data={item.image}
+                renderItem={renderImage}
+                keyExtractor={(item, index) => index.toString()}
+                numColumns={3}
+            />
+        </View>
+    )
+
 
 
     useEffect(() => {
@@ -83,18 +141,18 @@ const Folder = ({ navigation, route }) => {
         fetchContentInFolder()
     }, [openCamera]);
 
-    useEffect(()=>{
+    useEffect(() => {
         visibleHeadMenu ? hideHeader() : showHeader();
-    },[visibleHeadMenu])
+    }, [visibleHeadMenu])
 
     useEffect(() => {
-        fetchContentInFolder();
+         fetchContentInFolder();
         if (!isModalRename) setVisibleHeadMenu(false);
     }, [isModalRename, isModalDelete]);
 
     return (
         <View style={styles.container}>
-             {visibleHeadMenu &&
+            {visibleHeadMenu &&
                 <View style={styles.headMenu}>
                     <View>
                         <TouchableOpacity onPress={() => setVisibleHeadMenu(false)}>
@@ -118,25 +176,24 @@ const Folder = ({ navigation, route }) => {
                         <View style={{ width: '100%', marginTop: 10, alignItems: 'center' }}>
                             <FlatList
                                 data={images}
-                                renderItem={renderPictures}
+                                renderItem={renderItem}
                                 keyExtractor={(item, index) => index.toString()}
-                                numColumns={3}
                             />
                         </View>
                     </View>
                 </View>
             )}
-            <FullScreenImageModal 
-                isVisible={openImageModal} 
-                pathImage={imageClicked} onClose={() => setOpenImageModal(false)} 
+            <FullScreenImageModal
+                isVisible={openImageModal}
+                pathImage={imageClicked} onClose={() => setOpenImageModal(false)}
             />
-              <RenameFileModal
+            <RenameFileModal
                 visible={isModalRename}
                 onClose={() => setIsModalRename(false)}
                 file={currentFile}
                 folder={folder}
             />
-             <DeleteFileModal
+            <DeleteFileModal
                 visible={isModalDelete}
                 onClose={() => setIsModalDelete(false)}
                 folder={folder}
@@ -158,14 +215,20 @@ const styles = StyleSheet.create({
         backgroundColor: 'blue',
         paddingVertical: 15,
         paddingHorizontal: 30,
-        marginBottom: 20, 
+        marginBottom: 20,
     },
     headMenu: {
-        marginTop:60,
+        marginTop: 60,
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginBottom: 20,
-    }
+    },
+    date:{
+        color: '#333', 
+        fontWeight: 'bold', 
+        fontSize: 16, 
+        marginBottom: 8 
+    },
 });
 
 export default Folder;
