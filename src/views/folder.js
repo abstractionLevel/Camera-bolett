@@ -5,6 +5,7 @@ import CameraComponent from '../components/cameraComponent';
 import { AntDesign,FontAwesome6 ,Entypo} from '@expo/vector-icons';
 import FullScreenImageModal from '../modal/fullScreenImageModal';
 import RenameFileModal from '../modal/renameFileModal';
+import DeleteFileModal from '../modal/deleteFileModal';
 
 const Folder = ({ navigation, route }) => {
 
@@ -134,6 +135,12 @@ const Folder = ({ navigation, route }) => {
                 onClose={() => setIsModalRename(false)}
                 file={currentFile}
                 folder={folder}
+            />
+             <DeleteFileModal
+                visible={isModalDelete}
+                onClose={() => setIsModalDelete(false)}
+                folder={folder}
+                file={currentFile}
             />
         </View>
     )
