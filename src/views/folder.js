@@ -41,15 +41,15 @@ const Folder = ({ navigation, route }) => {
         if (item === "add") {
             return (
                 <TouchableOpacity onPress={() => setOpenCamera(true)}>
-                    <AntDesign style={{ marginLeft: 40, marginTop: 24 }} name="pluscircleo" size={40} color="black" />
+                    <AntDesign style={{ marginLeft: 40, marginTop: 10 }} name="pluscircleo" size={40} color="black" />
                 </TouchableOpacity>
             )
         }
         return (
             <View   >
-                <TouchableOpacity style={{ marginLeft: 30 }} onPress={() => { setOpenImageModal(true); setImageClicked(`${FileSystem.documentDirectory}documentP/${folder}/` + item) }}>
-                    <Image source={{ uri: `${FileSystem.documentDirectory}documentP/${folder}/` + item }} style={{ width: 80, height: 80, borderRadius: 10, marginTop: 20 }} />
-                    <Text>{item}</Text>
+                <TouchableOpacity  style={{ padding:4 }} onPress={() => { setOpenImageModal(true); setImageClicked(`${FileSystem.documentDirectory}documentP/${folder}/` + item) }}>
+                    <Image source={{ uri: `${FileSystem.documentDirectory}documentP/${folder}/` + item }} style={{ width: 100, height: 100, borderRadius: 10 }} />
+                    <Text style={{ width: 80, height: 20, fontSize: 10, textAlign: 'center' }}>{item}</Text>
                 </TouchableOpacity>
             </View>
         )
@@ -75,14 +75,16 @@ const Folder = ({ navigation, route }) => {
                     <CameraComponent folder={folder} onClose={() => setOpenCamera(false)} />
                 </View>
             ) : (
-                <View>
-                    <View style={{ width: '100%', marginTop: 40 }}>
-                        <FlatList
-                            data={images}
-                            renderItem={renderPictures}
-                            keyExtractor={(item, index) => index.toString()}
-                            numColumns={3}
-                        />
+                <View style={{width:'100%',alignItems:'center'}}>
+                    <View style={{ justifyContent: 'center',width: '90%' }}>
+                        <View style={{ width: '100%', marginTop: 40,alignItems:'center' }}>
+                            <FlatList
+                                data={images}
+                                renderItem={renderPictures}
+                                keyExtractor={(item, index) => index.toString()}
+                                numColumns={3}
+                            />
+                        </View>
                     </View>
                 </View>
             )}
