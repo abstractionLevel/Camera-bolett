@@ -3,30 +3,30 @@ import { View, Modal, TextInput, Button, StyleSheet } from 'react-native';
 import * as FileSystem from 'expo-file-system';
 import { FOLDERS_DIRECTORY_PATH } from '../../constant/constants';
 
-const RenameFileModal = ({ visible, onClose, file }) => {
+const RenameFileModal = ({ visible, onClose,folder, file }) => {
 
     const [newFileName, setNewFileName] = useState(null);
 
     const handleRenameFile = async () => {
         await FileSystem.moveAsync({
-            from: FOLDERS_DIRECTORY_PATH + '/' + file, 
-            to: FOLDERS_DIRECTORY_PATH + '/' + newFileName,
+            from: FOLDERS_DIRECTORY_PATH + folder + '/' + file, 
+            to: FOLDERS_DIRECTORY_PATH + folder + '/' + newFileName,
         });
         setNewFileName(null);
         onClose();
-
     }
 
     const onCloseModal = () => {
-        setFolderName(null);
+        setNewFileName(null);
         onClose();
     }
 
     useEffect(() => {
+        console.log("file ", file)
         if (file !== null) {
             setNewFileName(file);
         }
-    }, [folder]);
+    }, [file]);
 
     return (
         <Modal

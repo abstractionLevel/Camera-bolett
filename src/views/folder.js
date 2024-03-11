@@ -4,6 +4,7 @@ import * as FileSystem from 'expo-file-system';
 import CameraComponent from '../components/cameraComponent';
 import { AntDesign,FontAwesome6 ,Entypo} from '@expo/vector-icons';
 import FullScreenImageModal from '../modal/fullScreenImageModal';
+import RenameFileModal from '../modal/renameFileModal';
 
 const Folder = ({ navigation, route }) => {
 
@@ -16,7 +17,8 @@ const Folder = ({ navigation, route }) => {
     const [visibleHeadMenu, setVisibleHeadMenu] = useState(null);
     const [isModalRename, setIsModalRename] = useState(null);
     const [isModalDelete, setIsModalDelete] = useState(null);
-
+    const [currentFile,setCurrentFile] = useState(null);
+ 
     const hideHeader = () => {
         navigation.setParams({ showHeader: false }); 
     };
@@ -36,7 +38,6 @@ const Folder = ({ navigation, route }) => {
             contentFolder.forEach(item=>{
                 cpyContent.push(item.trim())
             })
-            console.log(cpyContent)
             setImages(contentFolder);
 
         } catch (error) {
@@ -46,9 +47,11 @@ const Folder = ({ navigation, route }) => {
 
     const onPressHeadMenu = (item) => {
         setVisibleHeadMenu(true);
+        setCurrentFile(item);
     }
 
     const renderPictures = ({ item }) => {
+        
         if (item === "add") {
             return (
                 <TouchableOpacity style={{ width: 100, height: 100, borderWidth: 1, borderRadius: 10, alignItems: 'center', justifyContent: 'center' }} onPress={() => setOpenCamera(true)}>
@@ -82,6 +85,11 @@ const Folder = ({ navigation, route }) => {
     useEffect(()=>{
         visibleHeadMenu ? hideHeader() : showHeader();
     },[visibleHeadMenu])
+
+    useEffect(() => {
+        fetchContentInFolder();
+        if (!isModalRename) setVisibleHeadMenu(false);
+    }, [isModalRename, isModalDelete]);
 
     return (
         <View style={styles.container}>
@@ -117,7 +125,16 @@ const Folder = ({ navigation, route }) => {
                     </View>
                 </View>
             )}
-            <FullScreenImageModal isVisible={openImageModal} pathImage={imageClicked} onClose={() => setOpenImageModal(false)} />
+            <FullScreenImageModal 
+                isVisible={openImageModal} 
+                pathImage={imageClicked} onClose={() => setOpenImageModal(false)} 
+            />
+              <RenameFileModal
+                visible={isModalRename}
+                onClose={() => setIsModalRename(false)}
+                file={currentFile}
+                folder={folder}
+            />
         </View>
     )
 }
