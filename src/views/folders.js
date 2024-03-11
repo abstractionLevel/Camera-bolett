@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { Entypo } from '@expo/vector-icons';
 import CreateFolderModal from '../createFolderModal';
 import { AntDesign, FontAwesome6 } from '@expo/vector-icons';
+import RenameFolderModal from '../modal/renameFolderModal';
+import { FOLDERS_DIRECTORY_PATH } from '../../constant/constants';
 
 
 const Folders = ({ navigation }) => {
@@ -12,12 +14,12 @@ const Folders = ({ navigation }) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [updateView, setUpdateView] = useState(false);
     const [visibleHeadMenu, setVisibleHeadMenu] = useState(null);
+    const [isModalRename,setIsModalRename] = useState(null);
+    const [currentFolder,setCurrentFolder] = useState(null);
 
     const handleCreateFolder = async (folderName) => {
         try {
-            // Path della nuova cartella
-            const folderPath = `${FileSystem.documentDirectory}/documentP/` + folderName;
-            // Creazione della cartella
+            const folderPath = FOLDERS_DIRECTORY_PATH + folderName;
             setUpdateView(true);
             await FileSystem.makeDirectoryAsync(folderPath, { intermediates: true });
         } catch (error) {
@@ -27,14 +29,9 @@ const Folders = ({ navigation }) => {
 
     const checkAndCreateFolder = async () => {
         try {
-            const documentPFolderExists = await FileSystem.getInfoAsync(
-                `${FileSystem.documentDirectory}/documentP`
-            );
+            const documentPFolderExists = await FileSystem.getInfoAsync(FOLDERS_DIRECTORY_PATH);
             if (!documentPFolderExists.exists) {
-                await FileSystem.makeDirectoryAsync(
-                    `${FileSystem.documentDirectory}/documentP`,
-                    { intermediates: true }
-                );
+                await FileSystem.makeDirectoryAsync(FOLDERS_DIRECTORY_PATH,{ intermediates: true });
             } else {
 
                 fetchFolders();
@@ -47,7 +44,7 @@ const Folders = ({ navigation }) => {
 
     const fetchFolders = async () => {
         try {
-            const documentPDirectory = `${FileSystem.documentDirectory}/documentP`;
+            const documentPDirectory = FOLDERS_DIRECTORY_PATH;
             const documentPFolders = await FileSystem.readDirectoryAsync(
                 documentPDirectory
             );
@@ -57,13 +54,9 @@ const Folders = ({ navigation }) => {
         }
     };
 
-    const handleLongPress = () => {
-        // Apri il menu con le opzioni
-        console.log('Apri il menu con le opzioni per:', item);
-    };
 
     const onPressHeadMenu = (item) => {
-        console.log("item ", item)
+        setCurrentFolder(item);
         setVisibleHeadMenu(true);
     }
 
@@ -85,15 +78,23 @@ const Folders = ({ navigation }) => {
         setUpdateView(false);
     }, [updateView]);
 
+    useEffect(() => {
+        fetchFolders();
+        if(!isModalRename) setVisibleHeadMenu(false);
+    }, [isModalRename]);
+    
+
     return (
         <View style={{ flex: 1, marginTop: 10 }}>
             {visibleHeadMenu &&
                 <View style={styles.headMenu}>
                     <View>
-                        <AntDesign name="left" size={32} color="black" />
+                        <TouchableOpacity onPress={() => setVisibleHeadMenu(false)}>
+                            <AntDesign name="left" size={32} color="black" style={{ marginLeft: 10 }} />
+                        </TouchableOpacity>
                     </View>
                     <View style={{ flexDirection: 'row' }}>
-                        <Entypo name="edit" size={32} color="black" style={{ marginRight: 20 }} />
+                        <Entypo name="edit" size={32} color="black" style={{ marginRight: 20 }} onPress={()=>setIsModalRename(true)} />
                         <FontAwesome6 name="trash" size={32} color="black" style={{ marginRight: 20 }} />
                     </View>
                 </View>
@@ -121,6 +122,11 @@ const Folders = ({ navigation }) => {
             ) : (
                 <></>
             )}
+            <RenameFolderModal
+                visible={isModalRename}
+                onClose={() => setIsModalRename(false)}
+                folder={currentFolder}
+            />
         </View>
     );
 }
@@ -132,7 +138,6 @@ const styles = StyleSheet.create({
         marginVertical: 5,
     },
     headMenu: {
-        backgroundColor: 'yellow',
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginBottom: 20,
