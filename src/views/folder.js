@@ -58,7 +58,7 @@ const Folder = ({ navigation, route }) => {
 
     useEffect(() => {
         fetchContentInFolder()
-        navigation.setParams({ title: folder }); // Imposta il titolo dei parametri della route per il nuovo titolo
+        navigation.setParams({ title: folder });
 
     }, []);
 

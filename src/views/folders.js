@@ -3,13 +3,15 @@ import * as FileSystem from 'expo-file-system';
 import { useEffect, useState } from 'react';
 import { Entypo } from '@expo/vector-icons';
 import CreateFolderModal from '../createFolderModal';
+import { AntDesign, FontAwesome6 } from '@expo/vector-icons';
+
 
 const Folders = ({ navigation }) => {
 
     const [folders, setFolders] = useState([]);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [updateView, setUpdateView] = useState(false);
-
+    const [visibleHeadMenu, setVisibleHeadMenu] = useState(null);
 
     const handleCreateFolder = async (folderName) => {
         try {
@@ -55,8 +57,18 @@ const Folders = ({ navigation }) => {
         }
     };
 
+    const handleLongPress = () => {
+        // Apri il menu con le opzioni
+        console.log('Apri il menu con le opzioni per:', item);
+    };
+
+    const onPressHeadMenu = (item) => {
+        console.log("item ", item)
+        setVisibleHeadMenu(true);
+    }
+
     const renderFolder = ({ item }) => (
-        <TouchableOpacity onPress={() => navigation.navigate("Folder", { folder: item })}>
+        <TouchableOpacity onLongPress={() => onPressHeadMenu(item)} onPress={() => navigation.navigate("Folder", { folder: item })}>
             <View style={styles.folders}>
                 <Entypo style={{ marginLeft: 10 }} name="folder" size={24} color="#1E90FF" />
                 <Text style={{ marginLeft: 10 }} >{item}</Text>
@@ -75,6 +87,18 @@ const Folders = ({ navigation }) => {
 
     return (
         <View style={{ flex: 1, marginTop: 10 }}>
+            {visibleHeadMenu &&
+                <View style={styles.headMenu}>
+                    <View>
+                        <AntDesign name="left" size={32} color="black" />
+                    </View>
+                    <View style={{ flexDirection: 'row' }}>
+                        <Entypo name="edit" size={32} color="black" style={{ marginRight: 20 }} />
+                        <FontAwesome6 name="trash" size={32} color="black" style={{ marginRight: 20 }} />
+                    </View>
+                </View>
+            }
+
             {folders.length > 0 ? (
                 <View >
                     <FlatList
@@ -106,6 +130,12 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginVertical: 5,
+    },
+    headMenu: {
+        backgroundColor: 'yellow',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 20,
     }
 });
 
