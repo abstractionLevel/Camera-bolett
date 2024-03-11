@@ -5,6 +5,7 @@ import * as FileSystem from 'expo-file-system';
 import SetFileNameModal from '../modal/setNameFileModal';
 import { AntDesign } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
+import { FOLDERS_DIRECTORY_PATH } from '../../constant/constants';
 
 const CameraComponent = ({ folder, onClose }) => {
 
@@ -20,7 +21,6 @@ const CameraComponent = ({ folder, onClose }) => {
         if (status === 'granted') {
             if (cameraRef) {
                 let photo = await cameraRef.takePictureAsync();
-
                 setCapturedImage(photo.uri);
             }
         } else {
@@ -30,10 +30,11 @@ const CameraComponent = ({ folder, onClose }) => {
 
     const saveImageHandler = async (fileName) => {
         if (capturedImage) {
+            const directoryTo = FOLDERS_DIRECTORY_PATH + folder + "/" + fileName;
             try {
                 await FileSystem.moveAsync({
                     from: capturedImage,
-                    to: `${FileSystem.documentDirectory}documentP/${folder}/${fileName}.jpg`
+                    to: directoryTo
                 });
             } catch (error) {
                 console.error('Errore durante il salvataggio dell\'immagine:', error);

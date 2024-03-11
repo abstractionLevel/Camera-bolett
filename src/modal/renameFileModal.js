@@ -1,18 +1,32 @@
+import React, { useEffect, useState } from 'react';
+import { View, Modal, TextInput, Button, StyleSheet } from 'react-native';
+import * as FileSystem from 'expo-file-system';
+import { FOLDERS_DIRECTORY_PATH } from '../../constant/constants';
 
-import React, { useState } from 'react';
-import { View, Text, Modal, TextInput, Button, StyleSheet } from 'react-native';
+const RenameFileModal = ({ visible, onClose, file }) => {
 
-const SetFileNameModal = ({ visible, onClose, onSetFileName }) => {
+    const [newFileName, setNewFileName] = useState(null);
 
-    const [fileName, setfileName] = useState(null);
+    const handleRenameFile = async () => {
+        await FileSystem.moveAsync({
+            from: FOLDERS_DIRECTORY_PATH + '/' + file, 
+            to: FOLDERS_DIRECTORY_PATH + '/' + newFileName,
+        });
+        setNewFileName(null);
+        onClose();
 
-    const handleCreateFolder = () => {
-        if (fileName.trim() !== '') {
-            onSetFileName(fileName);
-            setfileName('');
-            onClose();
+    }
+
+    const onCloseModal = () => {
+        setFolderName(null);
+        onClose();
+    }
+
+    useEffect(() => {
+        if (file !== null) {
+            setNewFileName(file);
         }
-    };
+    }, [folder]);
 
     return (
         <Modal
@@ -26,21 +40,22 @@ const SetFileNameModal = ({ visible, onClose, onSetFileName }) => {
                     <TextInput
                         style={styles.input}
                         placeholder="Nome del file"
-                        value={fileName}
-                        onChangeText={setfileName}
+                        value={newFileName}
+                        onChangeText={setNewFileName}
                     />
                     <View style={styles.buttonContainer}>
                         <View style={styles.button}>
-                            <Button title="Fatto" onPress={handleCreateFolder} />
+                            <Button title="Fatto" onPress={handleRenameFile} />
                         </View>
                         <View style={styles.button}>
-                            <Button title="Annulla" onPress={onClose} />
+                            <Button title="Annulla" onPress={() => onCloseModal()} />
                         </View>
                     </View>
                 </View>
             </View>
         </Modal>
     );
+
 };
 
 const styles = StyleSheet.create({
@@ -51,7 +66,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     modalContent: {
-        width:'80%',
+        width: '80%',
         backgroundColor: 'white',
         padding: 20,
         borderRadius: 10,
@@ -75,8 +90,8 @@ const styles = StyleSheet.create({
     },
     button: {
         flex: 1,
-        marginHorizontal: 5, // Aggiungi spaziatura tra i pulsanti se necessario
+        marginHorizontal: 5, 
     },
 });
 
-export default SetFileNameModal;
+export default RenameFileModal;

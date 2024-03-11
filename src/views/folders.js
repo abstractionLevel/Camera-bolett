@@ -15,9 +15,9 @@ const Folders = ({ navigation }) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [updateView, setUpdateView] = useState(false);
     const [visibleHeadMenu, setVisibleHeadMenu] = useState(null);
-    const [isModalRename,setIsModalRename] = useState(null);
-    const [isModalDelete,setIsModalDelete] = useState(null);
-    const [currentFolder,setCurrentFolder] = useState(null);
+    const [isModalRename, setIsModalRename] = useState(null);
+    const [isModalDelete, setIsModalDelete] = useState(null);
+    const [currentFolder, setCurrentFolder] = useState(null);
 
     const handleCreateFolder = async (folderName) => {
         try {
@@ -33,7 +33,7 @@ const Folders = ({ navigation }) => {
         try {
             const documentPFolderExists = await FileSystem.getInfoAsync(FOLDERS_DIRECTORY_PATH);
             if (!documentPFolderExists.exists) {
-                await FileSystem.makeDirectoryAsync(FOLDERS_DIRECTORY_PATH,{ intermediates: true });
+                await FileSystem.makeDirectoryAsync(FOLDERS_DIRECTORY_PATH, { intermediates: true });
             } else {
 
                 fetchFolders();
@@ -80,9 +80,9 @@ const Folders = ({ navigation }) => {
 
     useEffect(() => {
         fetchFolders();
-        if(!isModalRename) setVisibleHeadMenu(false);
-    }, [isModalRename,isModalDelete]);
-    
+        if (!isModalRename) setVisibleHeadMenu(false);
+    }, [isModalRename, isModalDelete]);
+
 
     return (
         <View style={{ flex: 1, marginTop: 10 }}>
@@ -94,8 +94,8 @@ const Folders = ({ navigation }) => {
                         </TouchableOpacity>
                     </View>
                     <View style={{ flexDirection: 'row' }}>
-                        <Entypo name="edit" size={32} color="black" style={{ marginRight: 20 }} onPress={()=>setIsModalRename(true)} />
-                        <FontAwesome6 name="trash" size={32} color="black" style={{ marginRight: 20 }} onPress={()=>setIsModalDelete(true)}/>
+                        <Entypo name="edit" size={32} color="black" style={{ marginRight: 20 }} onPress={() => setIsModalRename(true)} />
+                        <FontAwesome6 name="trash" size={32} color="black" style={{ marginRight: 20 }} onPress={() => setIsModalDelete(true)} />
                     </View>
                 </View>
             }
@@ -108,20 +108,20 @@ const Folders = ({ navigation }) => {
                         vertical={true}
                         keyExtractor={(item, index) => index.toString()}
                     />
-                    <View style={{ width: '100%', alignItems: 'center', marginTop: 100 }}>
-                        <View style={{ width: '50%' }}>
-                            <Button style={{ with: 20 }} title="Crea Cartella" onPress={() => setIsModalVisible(!isModalVisible)} />
-                        </View>
-                    </View>
-                    <CreateFolderModal
-                        visible={isModalVisible}
-                        onClose={() => setIsModalVisible(false)}
-                        onCreateFolder={handleCreateFolder}
-                    />
                 </View>
             ) : (
                 <></>
             )}
+            <View style={{ width: '100%', alignItems: 'center', marginTop: 100 }}>
+                <View style={{ width: '50%' }}>
+                    <Button style={{ with: 20 }} title="Crea Cartella" onPress={() => setIsModalVisible(true)} />
+                </View>
+            </View>
+            <CreateFolderModal
+                visible={isModalVisible}
+                onClose={() => setIsModalVisible(false)}
+                onCreateFolder={handleCreateFolder}
+            />
             <RenameFolderModal
                 visible={isModalRename}
                 onClose={() => setIsModalRename(false)}
