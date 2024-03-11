@@ -106,7 +106,7 @@ const Folder = ({ navigation, route }) => {
             )
         } else {
             return (
-                <TouchableOpacity style={{ padding: 2 }} onLongPress={() => onPressHeadMenu(item.name)} onPress={() => { setOpenImageModal(true); setImageClicked(FOLDERS_DIRECTORY_PATH + folder + "/" + item.name) }}>
+                <TouchableOpacity style={{ padding: 2 }} onLongPress={() => onPressHeadMenu(item)} onPress={() => { setOpenImageModal(true); setImageClicked(FOLDERS_DIRECTORY_PATH + folder + "/" + item) }}>
                     <Image source={{ uri: FOLDERS_DIRECTORY_PATH + folder + "/" + item }} style={{ width: 100, height: 100, borderRadius: 10, padding: 0 }} />
                     <Text numberOfLines={2} style={{ width: 80, height: 30, fontSize: 10, textAlign: 'center' }}>{item}</Text>
                 </TouchableOpacity>
