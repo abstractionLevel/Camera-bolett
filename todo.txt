@@ -1,1 +1,1 @@
-- mettere la data del giorno dello scatto foto
+- aggiungere zippare tutto e salvare nel dispositivo oppure inviare tramite email
