@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { View, Button, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import { Camera } from 'expo-camera';
 import * as FileSystem from 'expo-file-system';
 import SetFileNameModal from '../modal/setNameFileModal';
 import { AntDesign } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
-import { FOLDERS_DIRECTORY_PATH } from '../../constant/constants';
+import { FOLDERS_DIRECTORY_PATH } from '../constant/constants';
+import { Camera } from 'expo-camera';
 
 const CameraComponent = ({ folder, onClose }) => {
 
@@ -17,22 +17,19 @@ const CameraComponent = ({ folder, onClose }) => {
 
 
     const takePicture = async () => {
-        const { status } = await Camera.requestCameraPermissionsAsync();
-        if (status === 'granted') {
-            if (cameraRef) {
-                let photo = await cameraRef.takePictureAsync();
-                setCapturedImage(photo.uri);
-            }
-        } else {
-            console.log('Accesso alla fotocamera non consentito');
+
+        if (cameraRef) {
+            let photo = await cameraRef.takePictureAsync();
+            setCapturedImage(photo.uri);
         }
+
     };
 
     const saveImageHandler = async (fileName) => {
         if (capturedImage) {
             const directoryTo = FOLDERS_DIRECTORY_PATH + folder + "/" + fileName;
             try {
-             
+
 
                 await FileSystem.moveAsync({
                     from: capturedImage,
@@ -119,7 +116,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     previewImage: {
-        height:'90%',
+        height: '90%',
         marginBottom: 10,
     },
 });

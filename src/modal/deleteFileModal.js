@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Modal, Text, Button, StyleSheet } from 'react-native';
 import * as FileSystem from 'expo-file-system';
-import { FOLDERS_DIRECTORY_PATH } from '../../constant/constants';
+import { FOLDERS_DIRECTORY_PATH } from '../constant/constants';
 
 const DeleteFileModal = ({ visible, onClose, folder,file }) => {
 

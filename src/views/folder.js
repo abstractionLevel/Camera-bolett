@@ -6,7 +6,7 @@ import { AntDesign, FontAwesome6, Entypo } from '@expo/vector-icons';
 import FullScreenImageModal from '../modal/fullScreenImageModal';
 import RenameFileModal from '../modal/renameFileModal';
 import DeleteFileModal from '../modal/deleteFileModal';
-import { FOLDERS_DIRECTORY_PATH } from '../../constant/constants';
+import { FOLDERS_DIRECTORY_PATH } from '../constant/constants';
 import { getUniqueDatesFromArray } from '../utils/date';
 
 const Folder = ({ navigation, route }) => {

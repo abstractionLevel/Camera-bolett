@@ -5,7 +5,7 @@ import { Entypo } from '@expo/vector-icons';
 import CreateFolderModal from '../createFolderModal';
 import { AntDesign, FontAwesome6 } from '@expo/vector-icons';
 import RenameFolderModal from '../modal/renameFolderModal';
-import { FOLDERS_DIRECTORY_PATH } from '../../constant/constants';
+import { FOLDERS_DIRECTORY_PATH } from '../constant/constants';
 import DeleteFolderModal from '../modal/deleteDirectoryModal';
 
 

@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Folders from "./src/views/folders";
 import Folder from './src/views/folder';
 import * as MediaLibrary from "expo-media-library";
+import { Camera } from 'expo-camera';
 
 
 
@@ -15,11 +16,11 @@ export default function App() {
 	useEffect(() => {
 		const getPermissions = async () => {
 			const { status } = await MediaLibrary.requestPermissionsAsync();
+			const { statusCamera } = await Camera.requestCameraPermissionsAsync();
 
-			if (status === "granted") {
-				// Save image to media library
-
-				console.log("Image successfully saved");
+			if (status === "granted" && statusCamera === "granted") {
+		
+				console.log("Permission granted");
 			}
 		};
 
