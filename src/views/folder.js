@@ -62,9 +62,12 @@ const Folder = ({ navigation, route }) => {
             groupedPicture.push(dateGroup);
         });
         groupedPicture.sort((a, b) => {
-            const dateA = new Date(a.date.split('/').reverse().join('-'));
-            const dateB = new Date(b.date.split('/').reverse().join('-'));
-            return  dateB - dateA;
+            if(a.date && b.date) {
+                const dateA = new Date(a.date.split('/').reverse().join('-'));
+                const dateB = new Date(b.date.split('/').reverse().join('-'));
+                return  dateB - dateA;
+            }
+           
 
         });
         setImages(groupedPicture);
@@ -90,7 +93,7 @@ const Folder = ({ navigation, route }) => {
                     console.error('Errore durante il recupero delle informazioni del file:', error);
                 }
             }
-            // contents.push({ name: "add" })
+            contents.push({ name: "add" })
             groupedFotoByDate(contents);
 
         } catch (error) {
